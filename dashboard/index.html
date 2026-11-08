@@ -1,0 +1,530 @@
+<meta name="dash-one-writer">
+<style>
+  .yt { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); }
+  .yt-head { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .yt-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .yt-take { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); max-width: 70ch; }
+  .yt-take b { color: var(--color-fg); font-weight: 600; }
+  .yt-src { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; }
+  .yt-src a { color: inherit; }
+  .yt-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: var(--cds-gap-md); }
+  .yt-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+  .yt-tile span { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .yt-tile b { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+  .yt-tile small { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .yt-h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .yt-sec { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  .yt-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-md); }
+  .yt-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+  .yt-card h3 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+  .yt-note { margin: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .yt-chart { position: relative; min-height: 9rem; }
+  .yt-chart svg { display: block; overflow: visible; }
+  .yt-chart text { fill: var(--color-fg-muted); font-size: 12px; font-family: var(--font-anthropic-sans); }
+  .yt-chart .yt-lbl { fill: var(--color-fg); }
+  .yt-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); margin: 0; padding: 0; list-style: none; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .yt-legend li { display: flex; align-items: center; gap: 6px; }
+  .yt-sw { width: 10px; height: 10px; border-radius: 2px; display: inline-block; background: var(--cds-chart-muted); }
+  .yt-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; z-index: 2; }
+  .yt-tip em { font-style: normal; color: var(--cds-text-secondary); display: block; }
+  .yt-scroll { overflow: auto; max-height: 34rem; }
+  .yt-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .yt-table th { position: sticky; top: 0; background: var(--color-panel); text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); white-space: nowrap; z-index: 1; }
+  .yt-table th button { all: unset; cursor: pointer; }
+  .yt-table th button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .yt-table td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+  .yt-table td.n, .yt-table th.n { text-align: right; }
+  .yt-table td a { color: var(--color-fg); }
+  .yt-wide { min-width: 16rem; }
+  .yt-pill { display: inline-block; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--color-border-line); white-space: nowrap; }
+  .yt-pill[data-s="게시됨"] { color: var(--color-ok); border-color: currentColor; }
+  .yt-pill[data-s="예약됨"], .yt-pill[data-s="검수"] { color: var(--color-warn); border-color: currentColor; }
+  .yt-pri { font-weight: 600; white-space: nowrap; }
+  .yt-pri[data-p="높음"] { color: var(--color-bad); }
+  .yt-pri[data-p="중간"] { color: var(--color-warn); }
+  .yt-pri[data-p="낮음"] { color: var(--color-fg-muted); }
+  .yt-tools { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm); align-items: center; }
+  .yt-search { font: inherit; font-size: var(--cds-font-size-caption); padding: 6px 10px; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-bg); color: var(--color-fg); min-width: 0; flex: 1 1 12rem; }
+  .yt-empty { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .yt-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .yt-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+  .yt details { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .yt details dl { display: grid; grid-template-columns: max-content 1fr; gap: 4px 16px; }
+  .yt details dt { color: var(--color-fg); }
+  .yt details dd { margin: 0; }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+
+<div class="yt" lang="ko">
+  <header class="yt-head" id="top">
+    <h1 class="yt-title">유튜브 마케팅 스튜디오</h1>
+    <p class="yt-take yt-s-none" hidden>아직 게시된 영상이 없습니다. 기획된 <b data-draw="tk-total" data-source="summary" data-field="total" data-row="0">—</b>편 가운데 첫 롱폼을 게시하면 조회수와 개선 진단이 이 화면에 채워집니다.</p>
+    <p class="yt-take yt-s-some" hidden>지금까지 <b data-draw="tk-pub" data-source="summary" data-field="published" data-row="0">—</b>편을 게시해 조회수 <b data-draw="tk-views" data-source="summary" data-field="views" data-row="0">—</b>회를 얻었습니다. 아래 개선 과제를 높음 순서대로 처리하세요.</p>
+    <p class="yt-src">데이터: <a href="https://docs.google.com/spreadsheets/d/1ZhfC33dfk7aOdBjPHFovzXbxHlSnQsTEqyKbBmwdAeI/edit" target="_blank" rel="noopener">유튜브 영상 저장소 시트</a>. 영상 추가와 상태 변경은 시트에서 하면 이 화면이 열 때마다 새로 읽습니다.</p>
+  </header>
+
+  <section class="yt-tiles" id="summary" aria-label="요약">
+    <div class="yt-tile"><span>게시된 영상</span><b class="dash-skeleton" data-draw="t-pub" data-source="summary" data-field="published" data-row="0" data-fetchpriority="high">—</b><small>전체 등록 <b data-draw="t-total" data-source="summary" data-field="total" data-row="0" style="font:inherit">—</b>편</small></div>
+    <div class="yt-tile"><span>누적 조회수</span><b class="dash-skeleton" data-draw="t-views" data-source="summary" data-field="views" data-row="0">—</b><small>게시된 영상 합계</small></div>
+    <div class="yt-tile"><span>평균 노출 클릭률</span><b class="dash-skeleton" data-draw="t-ctr" data-source="summary" data-field="ctr" data-row="0">—</b><small>목표 4% 이상</small></div>
+    <div class="yt-tile"><span>평균 시청 지속률</span><b class="dash-skeleton" data-draw="t-ret" data-source="summary" data-field="retention" data-row="0">—</b><small>롱폼 목표 35% 이상</small></div>
+    <div class="yt-tile"><span>설명란 링크 클릭</span><b class="dash-skeleton" data-draw="t-clicks" data-source="summary" data-field="clicks" data-row="0">—</b><small>UTM 유입 합계</small></div>
+    <div class="yt-tile"><span>제작 진행 중</span><b class="dash-skeleton" data-draw="t-prog" data-source="summary" data-field="inProgress" data-row="0">—</b><small>제작중·검수·예약됨</small></div>
+  </section>
+
+  <section class="yt-sec" id="actions">
+    <h2 class="yt-h2">개선 과제</h2>
+    <p class="yt-note">시트의 상태와 지표를 기준으로 자동 진단합니다. 기준: 클릭률 4% 미만, 롱폼 지속률 35% 미만, 쇼츠 지속률 70% 미만, 조회 대비 링크 클릭 0.5% 미만, 퍼널 목표(문제인식 60 · 방법 30 · 제품 10)와 15%p 이상 차이, 롱폼 1편당 쇼츠 3편 미만.</p>
+    <div class="yt-card">
+      <div class="yt-scroll">
+        <table class="yt-table" data-source="actions" data-row-key="id" aria-label="개선 과제">
+          <thead><tr><th data-field="우선순위">우선순위</th><th data-field="영역">영역</th><th data-field="진단" class="yt-wide">진단</th><th data-field="해결책" class="yt-wide">해결책</th></tr></thead>
+          <tbody data-draw="actions"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="yt-sec" id="pipeline">
+    <h2 class="yt-h2">게시 현황</h2>
+    <div class="yt-grid">
+      <div class="yt-card" id="pipe-card">
+        <h3>브랜드별 제작 단계</h3>
+        <p class="yt-note">롱폼과 쇼츠를 합친 편수입니다.</p>
+        <ul class="yt-legend">
+          <li><i class="yt-sw" data-i="0"></i>기획</li>
+          <li><i class="yt-sw" data-i="1"></i>제작중</li>
+          <li><i class="yt-sw" data-i="2"></i>검수</li>
+          <li><i class="yt-sw" data-i="3"></i>예약됨</li>
+          <li><i class="yt-sw" data-i="4"></i>게시됨</li>
+        </ul>
+        <div class="yt-chart" data-draw="pipe" data-source="pipeline"></div>
+      </div>
+      <div class="yt-card" id="upcoming-card">
+        <h3>다음 게시 예정</h3>
+        <p class="yt-note">제작중, 검수, 예약됨 상태이거나 게시 예정일이 있는 영상입니다.</p>
+        <p class="yt-empty yt-up-empty" hidden>제작 중인 영상이 없습니다. 시트에서 영상의 상태를 제작중으로 바꾸고 게시 예정일을 적으면 여기에 나타납니다.</p>
+        <div class="yt-scroll" style="max-height:16rem">
+          <table class="yt-table" data-source="upcoming" data-row-key="ID" aria-label="다음 게시 예정">
+            <thead><tr><th data-field="게시예정일">예정일</th><th data-field="ID">ID</th><th data-field="유형">유형</th><th data-field="제목">제목</th><th data-field="상태">상태</th></tr></thead>
+            <tbody data-draw="upcoming"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yt-sec" id="mix">
+    <h2 class="yt-h2">콘텐츠 구성</h2>
+    <div class="yt-grid">
+      <div class="yt-card">
+        <h3>퍼널 비율과 목표</h3>
+        <p class="yt-note">막대는 등록된 전체 영상의 비율, 세로선은 목표입니다.</p>
+        <div class="yt-chart" data-draw="mix" data-source="mix"></div>
+      </div>
+      <div class="yt-card" id="weekly-card">
+        <h3>주간 조회수 추이</h3>
+        <p class="yt-note">시트의 주간성과 탭을 브랜드별 선으로 그립니다.</p>
+        <p class="yt-empty yt-wk-empty" hidden>아직 주간 기록이 없습니다. 매주 월요일 날짜로 브랜드별 조회수를 주간성과 탭에 한 줄씩 적으면 추이가 그려집니다.</p>
+        <div class="yt-chart" data-draw="weekly" data-source="weekly"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="yt-sec" id="library">
+    <h2 class="yt-h2">영상 저장소</h2>
+    <div class="yt-card">
+      <div class="yt-tools">
+        <input class="yt-search" id="yt-q" type="search" placeholder="제목, ID, 시리즈 검색" aria-label="영상 검색">
+        <select class="dash-select" id="yt-brand" aria-label="브랜드"><option value="">모든 브랜드</option><option value="바이브페이">바이브페이</option><option value="모두플레이">모두플레이</option></select>
+        <select class="dash-select" id="yt-type" aria-label="유형"><option value="">롱폼·쇼츠</option><option value="롱폼">롱폼</option><option value="쇼츠">쇼츠</option></select>
+        <select class="dash-select" id="yt-status" aria-label="상태"><option value="">모든 상태</option><option>기획</option><option>제작중</option><option>검수</option><option>예약됨</option><option>게시됨</option></select>
+      </div>
+      <div class="yt-scroll">
+        <table class="yt-table" data-source="videos" data-row-key="ID" aria-label="영상 저장소">
+          <thead><tr>
+            <th data-field="ID"><button data-k="ID">ID</button></th>
+            <th data-field="브랜드"><button data-k="브랜드">브랜드</button></th>
+            <th data-field="유형"><button data-k="유형">유형</button></th>
+            <th data-field="제목" class="yt-wide"><button data-k="제목">제목</button></th>
+            <th data-field="퍼널"><button data-k="퍼널">퍼널</button></th>
+            <th data-field="상태"><button data-k="상태">상태</button></th>
+            <th data-field="게시일"><button data-k="게시일">게시일</button></th>
+            <th data-field="조회수" class="n"><button data-k="조회수">조회수</button></th>
+            <th data-field="CTR(%)" class="n"><button data-k="CTR(%)">CTR(%)</button></th>
+            <th data-field="시청 지속률(%)" class="n"><button data-k="시청 지속률(%)">지속률(%)</button></th>
+            <th data-field="링크 클릭" class="n"><button data-k="링크 클릭">링크 클릭</button></th>
+          </tr></thead>
+          <tbody data-draw="vtable"></tbody>
+        </table>
+      </div>
+      <p class="yt-note">제목을 누르면 유튜브 영상이, 영상 파일 링크가 있으면 원본이 열립니다. 머리글을 누르면 정렬됩니다.</p>
+    </div>
+  </section>
+
+  <details>
+    <summary>지표 정의와 데이터 채우는 법</summary>
+    <dl>
+      <dt>노출 클릭률(CTR)</dt><dd>썸네일이 노출된 횟수 중 클릭된 비율. YouTube Studio 분석에서 영상별로 확인합니다.</dd>
+      <dt>시청 지속률</dt><dd>영상 길이 대비 평균 시청 비율. 쇼츠는 반복 재생으로 100%를 넘을 수 있습니다.</dd>
+      <dt>링크 클릭</dt><dd>설명란 UTM 링크로 사이트에 들어온 수. 사이트 분석 도구에서 옮겨 적습니다.</dd>
+      <dt>자동 갱신</dt><dd>시트에 youtube_stats.gs Apps Script를 설치하면 조회수, 좋아요, 댓글이 매일 채워집니다.</dd>
+      <dt>빠진 것</dt><dd>유튜브 커넥터가 없어 이 화면이 유튜브를 직접 조회하지는 않습니다. 모든 수치는 시트를 거칩니다.</dd>
+    </dl>
+  </details>
+</div>
+
+<script>
+  window.ytSheetRows = (answer, numeric) => {
+    let a = answer;
+    if (typeof a === 'string') { try { a = JSON.parse(a); } catch (e) { throw new Error('시트 응답을 읽을 수 없습니다: ' + a.slice(0, 120)); } }
+    if (a && a.error) throw new Error(a.error.message || String(a.error));
+    const v = (a && a.values) || [];
+    if (!v.length) return { columns: [], rows: [] };
+    const cols = v[0].map(String);
+    const rows = v.slice(1).filter((r) => r && r.length && String(r[0] ?? '').trim() !== '').map((r) => Object.fromEntries(cols.map((c, i) => {
+      const x = r[i] == null ? '' : String(r[i]).trim();
+      if (numeric.includes(c)) { const n = Number(x.replace(/[,%]/g, '')); return [c, x === '' || isNaN(n) ? null : n]; }
+      return [c, x];
+    })));
+    return { columns: cols, rows };
+  };
+  dash.loader('videos', {
+    description: '시트 값 배열의 첫 행을 열 이름으로 삼아 행으로 바꾸고, 지표 열은 숫자로 읽습니다.',
+    fn: ({ answer }) => window.ytSheetRows(answer, ['조회수', '노출수', 'CTR(%)', '시청 지속률(%)', '좋아요', '댓글', '구독 증가', '링크 클릭']),
+  });
+  dash.loader('weekly', {
+    description: '시트 값 배열의 첫 행을 열 이름으로 삼아 행으로 바꾸고, 수치 열은 숫자로 읽습니다.',
+    fn: ({ answer }) => window.ytSheetRows(answer, ['조회수', '시청 시간(시간)', '구독 증가', '링크 클릭', '가입 수']),
+  });
+
+  dash.calc('summary', {
+    title: '채널 요약',
+    description: '게시됨 상태 영상의 합계와 평균, 진행 중인 편수.',
+    inputs: ['videos'],
+    fn: (videos) => {
+      const pub = videos.filter((v) => v['상태'] === '게시됨');
+      const vals = (k) => pub.map((v) => v[k]).filter((x) => x != null);
+      const avg = (k) => { const xs = vals(k); return xs.length ? Math.round(xs.reduce((a, b) => a + b, 0) / xs.length * 10) / 10 : null; };
+      const sum = (k) => vals(k).reduce((a, b) => a + b, 0);
+      return [{
+        total: videos.length,
+        published: pub.length,
+        inProgress: videos.filter((v) => ['제작중', '검수', '예약됨'].includes(v['상태'])).length,
+        views: sum('조회수'),
+        clicks: sum('링크 클릭'),
+        ctr: avg('CTR(%)'),
+        retention: avg('시청 지속률(%)'),
+      }];
+    },
+  });
+
+  dash.calc('pipeline', {
+    title: '브랜드별 제작 단계',
+    description: '브랜드와 상태별 영상 편수.',
+    inputs: ['videos'],
+    fn: (videos) => {
+      const stages = ['기획', '제작중', '검수', '예약됨', '게시됨'];
+      const brands = [...new Set(videos.map((v) => v['브랜드']).filter(Boolean))];
+      return brands.flatMap((b) => stages.map((s) => ({ 브랜드: b, 상태: s, 편수: videos.filter((v) => v['브랜드'] === b && v['상태'] === s).length })));
+    },
+  });
+
+  dash.calc('upcoming', {
+    title: '다음 게시 예정',
+    description: '진행 중이거나 게시 예정일이 있는 미게시 영상, 예정일 순.',
+    inputs: ['videos'],
+    fn: (videos) => videos
+      .filter((v) => v['상태'] !== '게시됨' && (['제작중', '검수', '예약됨'].includes(v['상태']) || v['게시예정일']))
+      .map((v) => ({ ID: v['ID'], 브랜드: v['브랜드'], 유형: v['유형'], 제목: v['제목'], 상태: v['상태'], 게시예정일: v['게시예정일'] }))
+      .sort((a, b) => (a.게시예정일 || '9999').localeCompare(b.게시예정일 || '9999')),
+  });
+
+  dash.calc('mix', {
+    title: '퍼널 비율과 목표',
+    description: '퍼널 단계별 영상 비율과 목표 비율(60/30/10).',
+    inputs: ['videos'],
+    fn: (videos) => {
+      const target = { 문제인식: 0.6, 방법: 0.3, 제품: 0.1 };
+      const n = videos.filter((v) => target[v['퍼널']] != null).length;
+      return Object.keys(target).map((f) => {
+        const c = videos.filter((v) => v['퍼널'] === f).length;
+        return { 퍼널: f, 편수: c, 비율: n ? c / n : 0, 목표: target[f] };
+      });
+    },
+  });
+
+  dash.calc('actions', {
+    title: '개선 과제',
+    description: '상태와 지표를 기준값과 비교해 만든 우선순위별 개선 목록.',
+    inputs: ['videos'],
+    fn: (videos) => {
+      const CTR_MIN = 4, RET_LONG = 35, RET_SHORT = 70, CLICK_RATE = 0.005, MIX_GAP = 0.15, SHORTS_PER_LONG = 3;
+      const target = { 문제인식: 0.6, 방법: 0.3, 제품: 0.1 };
+      const out = [];
+      const add = (p, area, dx, fix) => out.push({ id: 'a' + (out.length + 1), 우선순위: p, 영역: area, 진단: dx, 해결책: fix });
+      const pub = videos.filter((v) => v['상태'] === '게시됨');
+      const brands = [...new Set(videos.map((v) => v['브랜드']).filter(Boolean))];
+
+      if (!pub.length) {
+        brands.forEach((b) => {
+          const first = videos.find((v) => v['브랜드'] === b && v['유형'] === '롱폼' && v['상태'] === '기획');
+          if (first) add('높음', '첫 게시', b + ' 채널에 게시된 영상이 없습니다.', first['ID'] + ' "' + first['제목'] + '"을 첫 롱폼으로 제작하고, 같은 주에 쇼츠 3편을 잘라 화·목·토에 예약하세요.');
+        });
+      }
+      brands.forEach((b) => {
+        const active = videos.filter((v) => v['브랜드'] === b && ['제작중', '검수', '예약됨'].includes(v['상태'])).length;
+        if (!active) add('중간', '제작 리듬', b + '에 제작중·검수·예약됨 상태인 영상이 없습니다.', '이번 주 월요일 기획 회의에서 ' + b + ' 롱폼 1편과 쇼츠 3편을 제작중으로 옮기세요. 주 1롱폼 + 3쇼츠가 기본 리듬입니다.');
+      });
+      const longs = videos.filter((v) => v['유형'] === '롱폼').length;
+      const shorts = videos.filter((v) => v['유형'] === '쇼츠').length;
+      if (longs && shorts / longs < SHORTS_PER_LONG) add('중간', '포맷 구성', '롱폼 ' + longs + '편에 쇼츠 ' + shorts + '편으로, 롱폼 1편당 쇼츠 ' + (shorts / longs).toFixed(1) + '편입니다.', '롱폼 대본의 ✂️ 구간마다 쇼츠를 만들어 롱폼 1편당 3편을 맞추세요. 쇼츠는 신규 시청자 유입 통로입니다.');
+      const n = videos.filter((v) => target[v['퍼널']] != null).length;
+      if (n) Object.keys(target).forEach((f) => {
+        const share = videos.filter((v) => v['퍼널'] === f).length / n;
+        if (Math.abs(share - target[f]) >= MIX_GAP) add('중간', '퍼널 균형', f + ' 영상 비율이 ' + Math.round(share * 100) + '%로 목표 ' + Math.round(target[f] * 100) + '%와 차이가 큽니다.', share > target[f] ? f + ' 주제 일부를 뒤로 미루고 다른 단계 주제를 앞당기세요.' : f + ' 단계 주제를 백로그에 추가하세요.');
+      });
+
+      pub.forEach((v) => {
+        const t = v['ID'] + ' "' + v['제목'] + '"';
+        const short = v['유형'] === '쇼츠';
+        if (v['조회수'] == null) { add('낮음', '데이터', t + '의 조회수가 비어 있습니다.', 'Apps Script 자동 갱신을 켜거나 YouTube Studio 수치를 시트에 옮겨 적으세요.'); return; }
+        if (v['CTR(%)'] != null && v['CTR(%)'] < CTR_MIN) add('높음', '썸네일·제목', t + '의 노출 클릭률이 ' + v['CTR(%)'] + '%입니다.', '썸네일 문구를 3~6자로 줄이고 제목과 다른 정보를 넣은 B안을 만들어 YouTube Studio 테스트 및 비교로 2주간 돌리세요.');
+        const rmin = short ? RET_SHORT : RET_LONG;
+        if (v['시청 지속률(%)'] != null && v['시청 지속률(%)'] < rmin) add('높음', short ? '쇼츠 훅' : '롱폼 훅', t + '의 시청 지속률이 ' + v['시청 지속률(%)'] + '%로 기준 ' + rmin + '% 미만입니다.', short ? '첫 1.5초 화면 문구와 첫 문장을 같은 질문으로 바꾸고, 40초 이내로 줄이세요.' : '첫 30초에서 인사를 빼고 시청자의 문제 상황으로 바로 시작하세요. 이탈이 몰리는 구간은 Studio 잔존율 그래프에서 확인합니다.');
+        if (v['조회수'] >= 500 && (v['링크 클릭'] || 0) / v['조회수'] < CLICK_RATE) add('중간', '전환', t + '는 조회수 ' + v['조회수'] + '회 대비 링크 클릭이 ' + (v['링크 클릭'] || 0) + '회입니다.', '설명란 첫 줄과 고정 댓글에 링크를 두고, 영상 안에서 링크를 말로 한 번 더 안내하세요.');
+        if (!v['유튜브 URL']) add('낮음', '데이터', t + '의 유튜브 URL이 비어 있습니다.', '시트에 URL을 넣어야 자동 갱신과 저장소 링크가 작동합니다.');
+      });
+      const ranked = pub.filter((v) => v['조회수'] != null).sort((a, b) => b['조회수'] - a['조회수']);
+      if (ranked.length >= 3) add('중간', '확장', '조회수 1위는 ' + ranked[0]['ID'] + ' "' + ranked[0]['제목'] + '"입니다.', '같은 주제로 후속 롱폼 1편과 쇼츠 2편을 기획하고, 해당 영상을 재생목록 첫 칸에 두세요.');
+      const order = { 높음: 0, 중간: 1, 낮음: 2 };
+      return out.sort((a, b) => order[a.우선순위] - order[b.우선순위]).map((r, i) => ({ ...r, id: 'a' + (i + 1) }));
+    },
+  });
+
+  // ---------- helpers ----------
+  const fmtInt = d3.format(',');
+  const fmtShare = d3.format('.0%');
+  const st = (id) => dash.data(id);
+  const failLine = (el) => { const d = document.createElement('div'); d.className = 'yt-fail'; d.textContent = '불러오지 못했습니다'; el.replaceChildren(d); };
+  const tipFor = (el) => { const t = document.createElement('div'); t.className = 'yt-tip'; t.hidden = true; el.appendChild(t); return t; };
+  const showTip = (tip, el, ev, head, line) => {
+    const box = el.getBoundingClientRect();
+    const em = document.createElement('em'); em.textContent = head;
+    const s = document.createElement('div'); s.textContent = line;
+    tip.replaceChildren(em, s); tip.hidden = false;
+    let x = ev.clientX - box.left + 12; const y = ev.clientY - box.top + 12;
+    if (x + tip.offsetWidth > box.width) x = Math.max(0, ev.clientX - box.left - tip.offsetWidth - 12);
+    tip.style.left = x + 'px'; tip.style.top = y + 'px';
+  };
+
+  // ---------- header + tiles ----------
+  dash.onData(() => {
+    const s = st('summary');
+    const ok = s.status === 'ok' && s.data.length;
+    const pub = ok ? s.data[0].published : null;
+    document.querySelectorAll('.yt-s-none').forEach((el) => { el.hidden = !(ok && pub === 0); });
+    document.querySelectorAll('.yt-s-some').forEach((el) => { el.hidden = !(ok && pub > 0); });
+    const u = st('upcoming');
+    document.querySelectorAll('.yt-up-empty').forEach((el) => { el.hidden = !(u.status === 'ok' && !u.data.length); });
+    const w = st('weekly');
+    document.querySelectorAll('.yt-wk-empty').forEach((el) => { el.hidden = !(w.status === 'ok' && !w.data.length); });
+    document.querySelectorAll('.yt-sw').forEach((el) => { el.style.background = dash.colors[Number(el.dataset.i)] || ''; });
+  });
+
+  const tile = (name, field, f) => dash.draw(name, (el) => {
+    const s = st('summary');
+    el.classList.toggle('dash-skeleton', s.status === 'loading');
+    if (s.status !== 'ok' || !s.data.length) { el.textContent = '—'; return; }
+    const v = s.data[0][field];
+    el.textContent = v == null ? '—' : f(v);
+  });
+  tile('t-pub', 'published', fmtInt);
+  tile('t-total', 'total', fmtInt);
+  tile('t-views', 'views', fmtInt);
+  tile('t-ctr', 'ctr', (v) => v + '%');
+  tile('t-ret', 'retention', (v) => v + '%');
+  tile('t-clicks', 'clicks', fmtInt);
+  tile('t-prog', 'inProgress', fmtInt);
+  tile('tk-total', 'total', fmtInt);
+  tile('tk-pub', 'published', fmtInt);
+  tile('tk-views', 'views', fmtInt);
+
+  // ---------- actions table ----------
+  dash.draw('actions', (tb) => {
+    const s = st('actions');
+    tb.replaceChildren();
+    if (s.status !== 'ok') return;
+    if (!s.data.length) {
+      const tr = document.createElement('tr'); const td = document.createElement('td'); td.colSpan = 4; td.textContent = '지금은 기준을 벗어난 항목이 없습니다.'; tr.appendChild(td); tb.appendChild(tr); return;
+    }
+    s.data.forEach((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = r.id;
+      const p = document.createElement('td'); const ps = document.createElement('span'); ps.className = 'yt-pri'; ps.dataset.p = r.우선순위; ps.textContent = r.우선순위; p.appendChild(ps);
+      const a = document.createElement('td'); a.textContent = r.영역; a.style.whiteSpace = 'nowrap';
+      const d = document.createElement('td'); d.textContent = r.진단;
+      const f = document.createElement('td'); f.textContent = r.해결책;
+      tr.append(p, a, d, f); tb.appendChild(tr);
+    });
+  });
+
+  // ---------- pipeline chart ----------
+  dash.draw('pipe', (el) => {
+    const s = st('pipeline');
+    el.replaceChildren();
+    if (s.status === 'error' || s.status === 'connect') { failLine(el); return; }
+    if (s.status !== 'ok' || !s.data.length) return;
+    const stages = ['기획', '제작중', '검수', '예약됨', '게시됨'];
+    const brands = [...new Set(s.data.map((r) => r.브랜드))];
+    const W = Math.max(260, el.clientWidth), rowH = 34, top = 4, H = top + brands.length * (rowH + 18);
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', '브랜드별 제작 단계 막대');
+    const lw = d3.max(brands, (b) => { const t = svg.append('text').text(b); const w = t.node().getComputedTextLength(); t.remove(); return w; }) + 12;
+    const totals = brands.map((b) => d3.sum(s.data.filter((r) => r.브랜드 === b), (r) => r.편수));
+    const x = d3.scaleLinear([0, d3.max(totals) || 1], [lw, W - 40]);
+    const tip = tipFor(el);
+    brands.forEach((b, i) => {
+      const y = top + i * (rowH + 18);
+      svg.append('text').attr('class', 'yt-lbl').attr('x', 0).attr('y', y + rowH / 2 + 4).text(b);
+      let acc = 0;
+      stages.forEach((stg, j) => {
+        const r = s.data.find((d) => d.브랜드 === b && d.상태 === stg); const v = r ? r.편수 : 0;
+        if (!v) return;
+        svg.append('rect').attr('x', x(acc)).attr('y', y).attr('width', Math.max(1, x(acc + v) - x(acc) - 1)).attr('height', rowH).attr('rx', 3).attr('fill', dash.colors[j])
+          .on('pointermove', (ev) => showTip(tip, el, ev, b + ' · ' + stg, fmtInt(v) + '편'))
+          .on('pointerleave', () => { tip.hidden = true; });
+        acc += v;
+      });
+      svg.append('text').attr('class', 'yt-lbl').attr('x', x(acc) + 6).attr('y', y + rowH / 2 + 4).text(fmtInt(acc) + '편');
+    });
+  });
+
+  // ---------- upcoming table ----------
+  dash.draw('upcoming', (tb) => {
+    const s = st('upcoming');
+    tb.replaceChildren();
+    if (s.status !== 'ok') return;
+    s.data.forEach((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = r.ID;
+      ['게시예정일', 'ID', '유형', '제목', '상태'].forEach((k) => {
+        const td = document.createElement('td');
+        if (k === '상태') { const p = document.createElement('span'); p.className = 'yt-pill'; p.dataset.s = r[k]; p.textContent = r[k]; td.appendChild(p); }
+        else td.textContent = r[k] || '';
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+  });
+
+  // ---------- mix chart ----------
+  dash.draw('mix', (el) => {
+    const s = st('mix');
+    el.replaceChildren();
+    if (s.status === 'error' || s.status === 'connect') { failLine(el); return; }
+    if (s.status !== 'ok' || !s.data.length) return;
+    const W = Math.max(260, el.clientWidth), rowH = 26, gap = 16, H = s.data.length * (rowH + gap) + 18;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', '퍼널 비율 막대와 목표선');
+    const lw = d3.max(s.data, (r) => { const t = svg.append('text').text(r.퍼널); const w = t.node().getComputedTextLength(); t.remove(); return w; }) + 12;
+    const x = d3.scaleLinear([0, 1], [lw, W - 44]);
+    const grid = svg.append('g');
+    [0, 0.25, 0.5, 0.75, 1].forEach((g) => {
+      grid.append('line').attr('x1', x(g)).attr('x2', x(g)).attr('y1', 0).attr('y2', H - 18).attr('stroke', 'var(--cds-chart-grid)');
+      grid.append('text').attr('x', x(g)).attr('y', H - 4).attr('text-anchor', 'middle').text(fmtShare(g));
+    });
+    const tip = tipFor(el);
+    s.data.forEach((r, i) => {
+      const y = i * (rowH + gap);
+      svg.append('text').attr('class', 'yt-lbl').attr('x', 0).attr('y', y + rowH / 2 + 4).text(r.퍼널);
+      const off = Math.abs(r.비율 - r.목표) >= 0.15;
+      svg.append('rect').attr('x', x(0)).attr('y', y).attr('width', Math.max(1, x(r.비율) - x(0))).attr('height', rowH).attr('rx', 3)
+        .attr('fill', off ? 'var(--cds-chart-status-critical)' : dash.colors[0])
+        .on('pointermove', (ev) => showTip(tip, el, ev, r.퍼널, fmtInt(r.편수) + '편 · ' + fmtShare(r.비율) + ' (목표 ' + fmtShare(r.목표) + ')'))
+        .on('pointerleave', () => { tip.hidden = true; });
+      svg.append('line').attr('x1', x(r.목표)).attr('x2', x(r.목표)).attr('y1', y - 4).attr('y2', y + rowH + 4).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 2).attr('stroke-dasharray', '4 3');
+      svg.append('text').attr('class', 'yt-lbl').attr('x', Math.min(W - 40, Math.max(x(r.비율), x(r.목표)) + 6)).attr('y', y + rowH / 2 + 4).text(fmtShare(r.비율));
+    });
+  });
+
+  // ---------- weekly chart ----------
+  dash.draw('weekly', (el) => {
+    const s = st('weekly');
+    el.replaceChildren();
+    if (s.status === 'error' || s.status === 'connect') { failLine(el); return; }
+    if (s.status !== 'ok' || !s.data.length) return;
+    const rows = s.data.filter((r) => r['주 시작일'] && r['조회수'] != null).map((r) => ({ d: new Date(r['주 시작일'] + 'T00:00:00Z'), b: r['브랜드'], v: r['조회수'] })).filter((r) => !isNaN(r.d));
+    if (!rows.length) return;
+    const W = Math.max(260, el.clientWidth), H = 200, m = { t: 10, r: 90, b: 24, l: 8 };
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img').attr('aria-label', '주간 조회수 추이');
+    const yMax = d3.max(rows, (r) => r.v) || 1;
+    const probe = svg.append('text').text(fmtInt(yMax)); m.l = probe.node().getComputedTextLength() + 10; probe.remove();
+    const x = d3.scaleUtc(d3.extent(rows, (r) => r.d), [m.l, W - m.r]);
+    const y = d3.scaleLinear([0, yMax], [H - m.b, m.t]).nice();
+    y.ticks(4).forEach((t) => {
+      svg.append('line').attr('x1', m.l).attr('x2', W - m.r).attr('y1', y(t)).attr('y2', y(t)).attr('stroke', 'var(--cds-chart-grid)');
+      svg.append('text').attr('x', m.l - 6).attr('y', y(t) + 4).attr('text-anchor', 'end').text(fmtInt(t));
+    });
+    const fd = d3.utcFormat('%-m/%-d');
+    x.ticks(Math.max(2, Math.floor((W - m.l - m.r) / 70))).forEach((t) => svg.append('text').attr('x', x(t)).attr('y', H - 6).attr('text-anchor', 'middle').text(fd(t)));
+    const tip = tipFor(el);
+    const groups = d3.groups(rows, (r) => r.b);
+    const ends = [];
+    groups.forEach(([b, rs], i) => {
+      rs.sort((a, c) => a.d - c.d);
+      svg.append('path').attr('d', d3.line((r) => x(r.d), (r) => y(r.v))(rs)).attr('fill', 'none').attr('stroke', dash.colors[i]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+      svg.selectAll(null).data(rs).join('circle').attr('cx', (r) => x(r.d)).attr('cy', (r) => y(r.v)).attr('r', 4).attr('fill', dash.colors[i])
+        .on('pointermove', (ev, r) => showTip(tip, el, ev, fd(r.d) + ' 주', b + ' ' + fmtInt(r.v) + '회'))
+        .on('pointerleave', () => { tip.hidden = true; });
+      const last = rs[rs.length - 1]; ends.push({ b, y: y(last.v), x: x(last.d) });
+    });
+    ends.sort((a, c) => a.y - c.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 14) ends[i].y = ends[i - 1].y + 14;
+    ends.forEach((e) => svg.append('text').attr('class', 'yt-lbl').attr('x', e.x + 8).attr('y', e.y + 4).text(e.b));
+  });
+
+  // ---------- library table ----------
+  window.ytLib = window.ytLib || { q: '', brand: '', type: '', status: '', key: 'ID', dir: 1 };
+  const L = window.ytLib;
+  const stageOrder = { 기획: 0, 제작중: 1, 검수: 2, 예약됨: 3, 게시됨: 4 };
+  const NUMS = ['조회수', 'CTR(%)', '시청 지속률(%)', '링크 클릭'];
+  const idNum = (s) => { const m = String(s).match(/^([A-Z]+)(\d+)$/); return m ? [m[1], Number(m[2])] : [String(s), 0]; };
+  const cmp = (a, b) => {
+    const k = L.key;
+    if (k === 'ID') { const [pa, na] = idNum(a.ID), [pb, nb] = idNum(b.ID); return (pa.localeCompare(pb) || na - nb) * L.dir; }
+    if (k === '상태') return ((stageOrder[a[k]] ?? 9) - (stageOrder[b[k]] ?? 9)) * L.dir;
+    if (NUMS.includes(k)) { const x = a[k] ?? -1, y = b[k] ?? -1; return (x - y) * L.dir; }
+    return String(a[k] || '').localeCompare(String(b[k] || '')) * L.dir;
+  };
+  const safeUrl = (u) => /^https:\/\//.test(u || '') ? u : '';
+  dash.draw('vtable', (tb) => {
+    const s = st('videos');
+    tb.replaceChildren();
+    if (s.status !== 'ok') return;
+    const q = L.q.trim().toLowerCase();
+    const rows = s.data.filter((r) => (!L.brand || r['브랜드'] === L.brand) && (!L.type || r['유형'] === L.type) && (!L.status || r['상태'] === L.status)
+      && (!q || [r['ID'], r['제목'], r['시리즈'], r['메모']].join(' ').toLowerCase().includes(q))).sort(cmp);
+    rows.forEach((r) => {
+      const tr = document.createElement('tr'); tr.dataset.key = r.ID;
+      ['ID', '브랜드', '유형', '제목', '퍼널', '상태', '게시일', '조회수', 'CTR(%)', '시청 지속률(%)', '링크 클릭'].forEach((k) => {
+        const td = document.createElement('td');
+        if (k === '제목') {
+          const u = safeUrl(r['유튜브 URL']);
+          if (u) { const a = document.createElement('a'); a.href = u; a.target = '_blank'; a.rel = 'noopener'; a.textContent = r[k]; td.appendChild(a); }
+          else td.textContent = r[k];
+          const f = safeUrl(r['영상 파일']);
+          if (f) { const a2 = document.createElement('a'); a2.href = f; a2.target = '_blank'; a2.rel = 'noopener'; a2.textContent = ' · 원본'; a2.style.color = 'var(--color-fg-muted)'; td.appendChild(a2); }
+        } else if (k === '상태') { const p = document.createElement('span'); p.className = 'yt-pill'; p.dataset.s = r[k]; p.textContent = r[k]; td.appendChild(p); }
+        else if (NUMS.includes(k)) { td.className = 'n'; td.textContent = r[k] == null ? '' : (k === '조회수' || k === '링크 클릭' ? fmtInt(r[k]) : String(r[k])); }
+        else td.textContent = r[k] || '';
+        tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+  });
+  document.querySelectorAll('#yt-q').forEach((el) => el.addEventListener('input', () => { L.q = el.value; dash.draw('vtable'); }));
+  [['#yt-brand', 'brand'], ['#yt-type', 'type'], ['#yt-status', 'status']].forEach(([sel, k]) => document.querySelectorAll(sel).forEach((el) => el.addEventListener('change', () => { L[k] = el.value; dash.draw('vtable'); })));
+  document.querySelectorAll('.yt-table th button[data-k]').forEach((b) => b.addEventListener('click', () => {
+    const k = b.dataset.k; L.dir = L.key === k ? -L.dir : (NUMS.includes(k) ? -1 : 1); L.key = k;
+    document.querySelectorAll('.yt-table th button[data-k]').forEach((o) => o.closest('th').setAttribute('aria-sort', o.dataset.k === L.key ? (L.dir > 0 ? 'ascending' : 'descending') : 'none'));
+    dash.draw('vtable');
+  }));
+</script>
