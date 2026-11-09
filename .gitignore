@@ -1,3 +1,4 @@
 client_secret.json
 token.json
 *.mp4
+!episodes/moduplay/20261110-launch-short/short.mp4

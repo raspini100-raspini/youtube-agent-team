@@ -25,6 +25,6 @@
   "containsSyntheticMedia": false,
   "playlist_id": "",
   "pinned_comment": "총무님들 고생 많으셨습니다 🙇 11월 10일부터 모두플레이 카드결제 오픈!\n카드수수료 4.4%는 결제하는 회원이 부담 / 정산은 D+1\n이 댓글에 우리 모임 총무님 태그해 주세요 👇\n👉 우리 모임 모두플레이로 옮기기: https://moduplay-sports.copperlime.chatgpt.site/?utm_source=youtube&utm_medium=shorts&utm_campaign=20261110-launch-short",
-  "notes": "11/10 실제 결제 오픈을 사이트에서 확인한 뒤 공개(승인 ③). publishAt은 오픈 확인 후 사람이 정함(KST +09:00, private 유지). 11–26초 모두플레이 웹 화면·결제·회비 장부·1/N 화면은 오픈 후 실제 화면 녹화로 교체된 최종본인지 확인(교체 전이면 '화면은 오픈 전 시연 버전' 표기 필수). 현재 사람 성우·사람 배우 기준으로 containsSyntheticMedia false — AI 음성/AI 아바타/AI 생성 인물을 사용하면 true로 변경. 쇼츠는 커스텀 썸네일 대신 커버 프레임(0–1.5초) 사용 — Studio에서 지정. 단독 쇼츠라 관련 영상(롱폼) 연결 없음. 고정 댓글은 API로 작성만 되므로 Studio에서 직접 고정(pin). 제목의 #Shorts는 shorts.md 제목(35자, #Shorts 제외) 뒤에 붙인 것으로, 설명란 해시태그 3개와 별도. 11/10 중 공개하지 못하면 제목의 \"오늘까지만\"을 \"이제 그만\"으로 바꾸고 재검수.",
+  "notes": "영상: scripts/render_launch_short.py로 만든 모션그래픽 쇼츠(내레이션·인물 없음, 자체 합성 배경음, 예시 화면 표기) → containsSyntheticMedia false 유지. 11/10 실제 결제 오픈을 사이트에서 확인한 뒤 공개(승인 ③). publishAt은 오픈 확인 후 사람이 정함(KST +09:00, private 유지). 11/10 중 공개하지 못하면 제목의 '오늘까지만'을 '이제 그만'으로 바꾸고 재검수. 쇼츠는 커버 프레임(0초) 사용. 고정 댓글은 Studio에서 직접 고정(pin).",
   "result": null
 }
