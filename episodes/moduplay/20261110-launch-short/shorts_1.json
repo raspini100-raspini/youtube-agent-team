@@ -24,7 +24,7 @@
   "madeForKids": false,
   "containsSyntheticMedia": false,
   "playlist_id": "",
-  "pinned_comment": "총무님들 고생 많으셨습니다 🙇 11월 10일부터 모두플레이 카드결제 오픈!\n카드수수료 4.4%는 결제하는 회원이 부담 / 정산은 D+1\n이 댓글에 우리 모임 총무님 태그해 주세요 👇\n👉 우리 모임 모두플레이로 옮기기: https://moduplay-sports.copperlime.chatgpt.site/?utm_source=youtube&utm_medium=shorts&utm_campaign=20261110-launch-short",
-  "notes": "영상: scripts/render_launch_short.py로 만든 모션그래픽 쇼츠(내레이션·인물 없음, 자체 합성 배경음, 예시 화면 표기) → containsSyntheticMedia false 유지. 11/10 실제 결제 오픈을 사이트에서 확인한 뒤 공개(승인 ③). publishAt은 오픈 확인 후 사람이 정함(KST +09:00, private 유지). 11/10 중 공개하지 못하면 제목의 '오늘까지만'을 '이제 그만'으로 바꾸고 재검수. 쇼츠는 커버 프레임(0초) 사용. 고정 댓글은 Studio에서 직접 고정(pin).",
+  "pinned_comment": "총무님들 고생 많으셨습니다 🙇 11월 10일부터 모두플레이 카드결제 오픈!\n카드수수료 4.4%는 결제하는 회원이 부담 / 정산은 D+1\n이 댓글에 우리 모임 총무님 태그해 주세요 👇\n👉 채널 프로필 링크에서 확인하세요. (주소: https://moduplay-sports.copperlime.chatgpt.site/?utm_source=youtube&utm_medium=shorts&utm_campaign=20261110-launch-short)",
+  "notes": "영상: scripts/render_launch_short.py로 만든 모션그래픽 쇼츠(내레이션·인물 없음, 자체 합성 배경음, 예시 화면 표기) → containsSyntheticMedia false 유지. 11/10 실제 결제 오픈을 사이트에서 확인한 뒤 공개(승인 ③). publishAt은 오픈 확인 후 사람이 정함(KST +09:00, private 유지). 11/10 중 공개하지 못하면 제목의 '오늘까지만'을 '이제 그만'으로 바꾸고 재검수. 쇼츠는 커버 프레임(0초) 사용. 고정 댓글은 Studio에서 직접 고정(pin). 쇼츠 설명란·댓글 링크는 클릭되지 않을 수 있어 영상 엔딩 CTA는 '링크는 채널 프로필에'. 공개 전 채널 프로필 링크에 UTM 링크 등록 필요.",
   "result": null
 }

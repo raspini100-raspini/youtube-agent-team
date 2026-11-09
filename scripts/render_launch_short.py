@@ -85,11 +85,11 @@ def brand_tag(d, bg):
 
 
 def example_label(d):
-    f = font(28, "Medium")
-    s = "이해를 돕는 예시 화면"
+    f = font(46, "ExtraBold")
+    s = "※ 이해를 돕는 예시 화면"
     w = d.textlength(s, font=f)
-    d.rounded_rectangle([W / 2 - w / 2 - 20, 1430, W / 2 + w / 2 + 20, 1478], radius=24, fill=(0, 0, 0, 0), outline=GREY, width=2)
-    d.text((W / 2 - w / 2, 1437), s, font=f, fill=GREY)
+    d.rounded_rectangle([W / 2 - w / 2 - 36, 1435, W / 2 + w / 2 + 36, 1525], radius=45, fill=WHITE, outline=INK, width=4)
+    d.text((W / 2 - w / 2, 1452), s, font=f, fill=INK)
 
 
 def card(d, box, fill=WHITE, r=36, shadow=True):
@@ -122,7 +122,7 @@ def s_hook(img, d, t):  # 0–3 단톡 미납 공지
 def s_bank(img, d, t):  # 3–6 입금자명
     bg = CREAM
     d.rectangle([0, 0, W, H], fill=bg)
-    caption(d, t, 3.0, ["'민수엄마'는", "누구죠?"], bg, color=INK, hl="민수엄마", size=96)
+    caption(d, t, 3.0, ["입금자명 '민수엄마'는", "누구죠?"], bg, color=INK, hl="민수엄마", size=84)
     card(d, [110, 620, 970, 1360])
     d.text((160, 660), "입금 내역", font=font(44, "Bold"), fill=INK)
     rows = [("민수엄마", "30,000"), ("ㄱㅁㅅ", "30,000"), ("회비요", "30,000"), ("김", "15,000")]
@@ -205,9 +205,10 @@ def s_pay(img, d, t):  # 15–18
     phone(d, x0, y0, 560, 840)
     d.text((x0 + 50, y0 + 70), "11월 정모 회비", font=font(46, "Bold"), fill=INK)
     d.text((x0 + 50, y0 + 150), "30,000원", font=font(84), fill=INK)
-    d.text((x0 + 50, y0 + 270), "결제수단", font=font(34, "Medium"), fill=GREY)
-    d.rounded_rectangle([x0 + 50, y0 + 320, x0 + 510, y0 + 420], radius=20, outline=GREEN, width=4)
-    d.text((x0 + 80, y0 + 345), "신용·체크카드", font=font(40, "Bold"), fill=GREEN)
+    d.text((x0 + 50, y0 + 250), "+ 카드수수료 4.4% (결제 회원 부담)", font=font(30, "Bold"), fill=ORANGE)
+    d.text((x0 + 50, y0 + 300), "결제수단", font=font(34, "Medium"), fill=GREY)
+    d.rounded_rectangle([x0 + 50, y0 + 350, x0 + 510, y0 + 450], radius=20, outline=GREEN, width=4)
+    d.text((x0 + 80, y0 + 375), "신용·체크카드", font=font(40, "Bold"), fill=GREEN)
     press = 1 - 0.06 * math.sin(min(1, max(0, (t - 16.6) / 0.3)) * math.pi)
     bw, bh = 460 * press, 120 * press
     bx, by = x0 + 280 - bw / 2, y0 + 650 - bh / 2
@@ -288,7 +289,7 @@ def s_settle(img, d, t):  # 34–37
     a = prog(t, 34.0, 0.4)
     text_c(d, W / 2, 300, "정산은", font(90, "Bold"), INK, a, bg)
     text_c(d, W / 2, 420, "D+1", font(260, "Black"), GREEN, a, bg)
-    for i, (lbl, sub) in enumerate((("결제일", "D"), ("다음 날", "D+1"))):
+    for i, (lbl, sub) in enumerate((("결제", "D"), ("정산", "D+1"))):
         b = prog(t, 34.6 + i * 0.5, 0.35)
         x = 170 + i * 420
         col = tuple(int(255 + (c - 255) * b) for c in (GREEN if i else INK))
@@ -307,8 +308,8 @@ def s_end(img, d, t):  # 37–40
     text_c(d, W / 2, 380, "우리 모임 총무님", font(100), WHITE, a, bg)
     text_c(d, W / 2, 520, "태그하세요", font(130, "Black"), ORANGE, a, bg)
     b = prog(t, 37.8, 0.4)
-    d.rounded_rectangle([210, 800, 870, 920], radius=60, fill=tuple(int(g + (m - g) * b) for g, m in zip(GREEN, MINT)))
-    text_c(d, W / 2, 828, "링크는 설명란에", font(56, "Bold"), GREEN, b, MINT)
+    d.rounded_rectangle([170, 800, 910, 920], radius=60, fill=tuple(int(g + (m - g) * b) for g, m in zip(GREEN, MINT)))
+    text_c(d, W / 2, 828, "링크는 채널 프로필에", font(56, "Bold"), GREEN, b, MINT)
     text_c(d, W / 2, 1060, "모두플레이 · 11.10 카드결제 OPEN", font(44, "Bold"), MINT, b, bg)
 
 
